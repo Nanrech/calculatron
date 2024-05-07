@@ -1,2 +1,2 @@
 # calculatron
- Silly little calculator using the Shunting-Yard algorithm. Written in C++
+Silly little calculator using the Shunting-Yard algorithm. Written in C/C++. Still a WIP! Educational!
