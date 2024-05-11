@@ -45,7 +45,7 @@ double evaluate(deque<token_t> &tokens_RPN) {
           EXIT_ERROR("Syntax error. Weird operator order.");
         }
         else {
-          // args[0] is the second argument, args[1] is the first one
+          // args[0] is b, args[1] is a
           args[i] = eval_st.top();
           eval_st.pop();
         }
@@ -55,7 +55,7 @@ double evaluate(deque<token_t> &tokens_RPN) {
       double result = 0.0;
 
       if (current_token.argument_num == 1) {
-        // 0 + args[0], 0 - args[0], simple solution
+        // 0 + args[0] & 0 - args[0], simple solution
         result = execute_operation(0, args[0], current_token.op);
       }
       else {
@@ -67,7 +67,6 @@ double evaluate(deque<token_t> &tokens_RPN) {
       eval_st.push(result);
     }
   }
-
   // There should be only one element left at the top of the stack: the result of the operation
   return eval_st.top();
 }

@@ -36,9 +36,9 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
   for (int i = 0; i < input_len; i++) {
     // If we find a digit
     if (IS_DIGIT(operation[i])) {
-      // We start getting the bit before the decimal dot (the '1' in '1.5')
+      // We start getting the integral portion
+      // And keep track of the possible fractional portion (and its length)
       double integral_portion = CHAR_TO_DIGIT(operation[i]);
-      // And keep track of the possible fractional portion of the number
       double fractional_portion = 0;
       int fractional_length = 0;
       i++; // next token
@@ -47,7 +47,7 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
       while (i <= input_len) {
         // We find a number:
         if (IS_DIGIT(operation[i])) {
-          // We add to the number like usual
+          // We add to the number like usual if it's part of the integral portion
           if (!is_float) {
             integral_portion = integral_portion * 10 + CHAR_TO_DIGIT(operation[i]);
           }
@@ -59,13 +59,13 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
           i++; // next token
         }
         // We find the dot that separates the fractional from the integer
+        // If there was already another . in the number to parse this will kill the program
         else if (IS_DECIMAL_POINT(operation[i])) {
-          // If there was already another . in the number to parse this will kill the program
           if (is_float) {
             cout << "At char. " << i << ": " << integral_portion << ". -> ..." << endl;
             EXIT_ERROR("Numbers cannot have two decimal signs in them. Check your input.");
           }
-          // We are dealing with a float so we set the is_float flag to true and move to the next thing
+          // We now know we are dealing with a float so we set the is_float flag to true and move to the next character
           is_float = true;
           i++;
         }
@@ -73,6 +73,7 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
         else {
           i--; // put back
           // Create new token with the info we have so far and continue
+          // Edge case: '1.' will be treated as '1.0'. Not a big deal
           tokens_infix.push_back(
             token_t{
               .value = integral_portion + GET_FIXED_FRACTIONAL(fractional_portion, fractional_length),
@@ -108,7 +109,7 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
         continue;
       }
 
-      // We take the operator and shove it in. Functions have not been implemented
+      // We take the operator and shove it in.
       tokens_infix.push_back(
             token_t{
               .op = operation[i],

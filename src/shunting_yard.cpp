@@ -29,9 +29,9 @@ void shunting_yard(vector<token_t> &tokens_infix, deque<token_t> &tokens_output)
       continue;
     }
 
-    // Closing parenthesis:
+    // Closing parenthesis...
+    // Flush operator stack until we get to the first opening bracket
     else if (current_token.op == ')') {
-      // Flush operator stack until we get to the first opening bracket
       while (!operator_st.empty() && operator_st.front().op != '(') {
         tokens_output.push_back(operator_st.front());
         operator_st.pop_front();
@@ -42,30 +42,30 @@ void shunting_yard(vector<token_t> &tokens_infix, deque<token_t> &tokens_output)
       buffer_token = &current_token;
     }
 
-    // If the token is any other operator (we have already filtered everything else out):
+    // If the token is any other operator...
+    // (Unary operators need to have their precedence and number of arguments modified)
     else {
-      // Unary operators need to have their precedence and number of arguments modified
       if (IS_UNARY(current_token.op)) {
         if ((!buffer_token->is_literal && buffer_token->op != ')') || buffer_token->value == 0) {
           current_token.precedence = 5;
           current_token.argument_num = 1;
         }
       }
-      // Everyone else
+      // As for everyone else...
+      // While there is an operator with greater precedence on top of the stack
       while (!operator_st.empty() && operator_st.front().op != '(') {
-        // While there is an operator with greater precedence on top of the stack
         if (operator_st.front().precedence >= current_token.precedence) {
           // Keep popping out of the stack and into the output until that is no longer the case
           tokens_output.push_back(operator_st.front());
           operator_st.pop_front();
           continue;
         }
-        // When that is no longer the case, break out and...
+        // When that is no longer the case, break out and
+        // push current operator into the operator stack
         else {
           break;
         }
       }
-      // ...push current operator into the operator stack
       operator_st.push_front(current_token);
       buffer_token = &operator_st.front();
     }
