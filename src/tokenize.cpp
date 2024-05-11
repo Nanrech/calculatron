@@ -14,9 +14,13 @@ int get_precedence(char c) {
     case '+':
     case '-':
       return 1;
+    
+    case '(':
+    case ')':
+      return 0;
 
     default:
-      return 0;
+      return -1;
   }
 }
 
@@ -99,8 +103,12 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
         parenthesis_check--;
         arguments = 0;
       }
+      else if (get_precedence(operation[i]) == -1) {
+        // Oops. This character shouldn't be counted. Next one!
+        continue;
+      }
 
-      // We take the operator and shove it in. Functions (sqrt, log, etc) have not been implemented yet
+      // We take the operator and shove it in. Functions have not been implemented
       tokens_infix.push_back(
             token_t{
               .op = operation[i],
@@ -110,10 +118,6 @@ void tokenize(char* operation, vector<token_t> &tokens_infix) {
             }
           );
       tokens_total++;
-    }
-    else {
-      // Everything else, we ignore.
-      continue;
     }
   }
   if (tokens_total == 0) {
