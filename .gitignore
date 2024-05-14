@@ -2,3 +2,4 @@
 *.exe
 /.vscode
 .gitattributes
+kill_all_objs.bat
